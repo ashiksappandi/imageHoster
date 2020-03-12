@@ -35,10 +35,10 @@ public class ImageController {
         return "images";
     }
 
-    //This method is called when the details of the specific image with corresponding title are to be displayed
-    //The logic is to get the image from the databse with corresponding title. After getting the image from the database the details are shown
-    //First receive the dynamic parameter in the incoming request URL in a string variable 'title' and also the Model type object
-    //Call the getImageByTitle() method in the business logic to fetch all the details of that image
+    //This method is called when the details of the specific image with corresponding id are to be displayed
+    //The logic is to get the image from the databse with corresponding id. After getting the image from the database the details are shown
+    //First receive the dynamic parameter in the incoming request URL in a string variable 'id' and also the Model type object
+    //Call the getImageById() method in the business logic to fetch all the details of that image
     //Add the image in the Model type object with 'image' as the key
     //Return 'images/image.html' file
 
@@ -91,6 +91,8 @@ public class ImageController {
 
     //The method first needs to convert the list of all the tags to a string containing all the tags separated by a comma and then add this string in a Model type object
     //This string is then displayed by 'edit.html' file as previous tags of an image
+    //This method validates if logged in user is the owner of the image, if not then adds an attribute to model to display error message when user try to
+    //edit an image and redirect them back to images/image.html
     @RequestMapping(value = "/editImage")
     public String editImage(@RequestParam("imageId") Integer imageId, Model model, HttpSession session) {
         String error = "Only the owner of the image can edit the image";
@@ -146,6 +148,8 @@ public class ImageController {
     //This controller method is called when the request pattern is of type 'deleteImage' and also the incoming request is of DELETE type
     //The method calls the deleteImage() method in the business logic passing the id of the image to be deleted
     //Looks for a controller method with request mapping of type '/images'
+    //This method validates if logged in user is the owner of the image, if not then adds an attribute to model to display error message when user try to
+    //delete an image and redirect them back to images/image.html
     @RequestMapping(value = "/deleteImage", method = RequestMethod.DELETE)
     public String deleteImageSubmit(@RequestParam(name = "imageId") Integer imageId, HttpSession session, Model model) {
         String error = "Only the owner of the image can delete the image";
