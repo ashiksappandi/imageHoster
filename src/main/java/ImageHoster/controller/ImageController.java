@@ -1,8 +1,10 @@
 package ImageHoster.controller;
 
+import ImageHoster.model.Comment;
 import ImageHoster.model.Image;
 import ImageHoster.model.Tag;
 import ImageHoster.model.User;
+import ImageHoster.service.CommentService;
 import ImageHoster.service.ImageService;
 import ImageHoster.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,9 @@ public class ImageController {
     @Autowired
     private TagService tagService;
 
+    @Autowired
+    private CommentService commentService;
+
     //This method displays all the images in the user home page after successful login
     @RequestMapping("images")
     public String getUserImages(Model model) {
@@ -45,9 +50,13 @@ public class ImageController {
     //Also now you need to add the tags of an image in the Model type object
     //Here a list of tags is added in the Model type object
     //this list is then sent to 'images/image.html' file and the tags are displayed
+
+    //This method also get comments of a particular image and added in Model type object
     @RequestMapping("/images/{id}/{title}")
-    public String showImage(@PathVariable("title") String title,@PathVariable("id") Integer id, Model model) {
-        Image image = imageService.getImageById(id);
+    public String showImage(@PathVariable("title") String title,@PathVariable("id") Integer imageId, Model model) {
+        Image image = imageService.getImage(imageId);//  .getImageById(imageId);
+        List<Comment> comments = commentService.getCommentsById(imageId);
+        model.addAttribute("comments", comments);
         model.addAttribute("image", image);
         model.addAttribute("tags", image.getTags());
         return "images/image";
@@ -93,6 +102,7 @@ public class ImageController {
     //This string is then displayed by 'edit.html' file as previous tags of an image
     //This method validates if logged in user is the owner of the image, if not then adds an attribute to model to display error message when user try to
     //edit an image and redirect them back to images/image.html
+    //This method also get comments of a particular image and added in Model type object before redirecting to images/image.html
     @RequestMapping(value = "/editImage")
     public String editImage(@RequestParam("imageId") Integer imageId, Model model, HttpSession session) {
         String error = "Only the owner of the image can edit the image";
@@ -103,6 +113,8 @@ public class ImageController {
 
         User sessionUser = (User) session.getAttribute("loggeduser");
         if(sessionUser.getId() != image.getUser().getId()) {
+            List<Comment> comments = commentService.getCommentsById(imageId);
+            model.addAttribute("comments", comments);
             model.addAttribute("editError", error);
             model.addAttribute("tags", image.getTags());
             return "images/image";
@@ -150,6 +162,7 @@ public class ImageController {
     //Looks for a controller method with request mapping of type '/images'
     //This method validates if logged in user is the owner of the image, if not then adds an attribute to model to display error message when user try to
     //delete an image and redirect them back to images/image.html
+    //This method also get comments of a particular image and added in Model type object before redirecting to images/image.html
     @RequestMapping(value = "/deleteImage", method = RequestMethod.DELETE)
     public String deleteImageSubmit(@RequestParam(name = "imageId") Integer imageId, HttpSession session, Model model) {
         String error = "Only the owner of the image can delete the image";
@@ -160,12 +173,32 @@ public class ImageController {
 
         User sessionUser = (User) session.getAttribute("loggeduser");
         if(sessionUser.getId() != image.getUser().getId()) {
+            List<Comment> comments = commentService.getCommentsById(imageId);
+            model.addAttribute("comments", comments);
             model.addAttribute("deleteError", error);
             model.addAttribute("tags", image.getTags());
             return "images/image";
         }
         imageService.deleteImage(imageId);
         return "redirect:/images";
+    }
+
+
+    //This controller method is called when the request pattern is of type 'image/{imageId}/{imageTitle}/comments' and also the incoming request is of POST type
+    //The method receives all the details of the comments to be stored in the database, and now the comment will be sent to the business logic to be persisted in the database
+    //Set the date on which the comment is posted
+    //After storing the comment, this method directs user to showImage()
+    @RequestMapping(value = "/image/{imageId}/{imageTitle}/comments", method = RequestMethod.POST)
+    public String createPost(@PathVariable(name = "imageId") Integer imageId, @RequestParam("comment") String comment ,HttpSession session){
+        Comment newComment = new Comment();
+        User user = (User) session.getAttribute("loggeduser");
+        Image image = imageService.getImage(imageId);
+        newComment.setUser(user);
+        newComment.setImage(image);
+        newComment.setText(comment);
+        newComment.setCreatedDate(new Date());
+        commentService.createNewComment(newComment);
+        return "redirect:/images/"+imageId+"/"+image.getTitle();
     }
 
 
