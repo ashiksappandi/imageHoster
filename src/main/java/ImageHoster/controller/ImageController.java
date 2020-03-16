@@ -81,7 +81,6 @@ public class ImageController {
     //set the tags attribute of the image as a list of all the tags returned by the findOrCreateTags() method
     @RequestMapping(value = "/images/upload", method = RequestMethod.POST)
     public String createImage(@RequestParam("file") MultipartFile file, @RequestParam("tags") String tags, Image newImage, HttpSession session) throws IOException {
-
         User user = (User) session.getAttribute("loggeduser");
         newImage.setUser(user);
         String uploadedImageData = convertUploadedFileToBase64(file);
@@ -181,24 +180,6 @@ public class ImageController {
         }
         imageService.deleteImage(imageId);
         return "redirect:/images";
-    }
-
-
-    //This controller method is called when the request pattern is of type 'image/{imageId}/{imageTitle}/comments' and also the incoming request is of POST type
-    //The method receives all the details of the comments to be stored in the database, and now the comment will be sent to the business logic to be persisted in the database
-    //Set the date on which the comment is posted
-    //After storing the comment, this method directs user to showImage()
-    @RequestMapping(value = "/image/{imageId}/{imageTitle}/comments", method = RequestMethod.POST)
-    public String createPost(@PathVariable(name = "imageId") Integer imageId, @RequestParam("comment") String comment ,HttpSession session){
-        Comment newComment = new Comment();
-        User user = (User) session.getAttribute("loggeduser");
-        Image image = imageService.getImage(imageId);
-        newComment.setUser(user);
-        newComment.setImage(image);
-        newComment.setText(comment);
-        newComment.setCreatedDate(new Date());
-        commentService.createNewComment(newComment);
-        return "redirect:/images/"+imageId+"/"+image.getTitle();
     }
 
 

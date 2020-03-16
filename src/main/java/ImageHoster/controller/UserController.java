@@ -44,8 +44,7 @@ public class UserController {
     @RequestMapping(value = "users/registration", method = RequestMethod.POST)
     public String registerUser(User user, Model model) {
         String error = "Password must contain atleast 1 alphabet, 1 number & 1 special character";
-        boolean test = userService.validPassword(user.getPassword());
-        if(!test) {
+        if(!userService.validPassword(user.getPassword())) {
             model.addAttribute("User",user);
             model.addAttribute("passwordTypeError", error);
             return "/users/registration";

@@ -35,16 +35,14 @@ public class UserService {
     //This methods validates if user entered password contains at least 1 alphabet (a-zA-Z), 1 number (0-9) and one special character (~!@#$%^&*()_-)
     //Return false if it fails the condition
     public boolean validPassword(String password){
-System.out.println("ASHIK");
-return true;
- //       if(!password.matches("(?=.*[0-9]).*") )
-//            return false;
-//        if(!password.matches("(?=.*[A-Za-z]).*") )
-//            return false;
- //       if(!password.matches("(?=.*[~!@#$%^&*()_-]).*") )
- //           return false;
+        if(!password.matches("(?=.*[0-9]).*") )
+            return false;
+        if(!password.matches("(?=.*[A-Za-z]).*") )
+            return false;
+        if(!password.matches("(?=.*[~!@#$%^&*()_-]).*") )
+            return false;
 
-   //     return true;
+        return true;
     }
 
 }
