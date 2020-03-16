@@ -1,0 +1,8 @@
+-------------------------------------------------------------------------------
+Test set: ImageHoster.controller.UserControllerTest
+-------------------------------------------------------------------------------
+Tests run: 6, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 1.206 s <<< FAILURE! - in ImageHoster.controller.UserControllerTest
+signupWithCorrectPasswordType(ImageHoster.controller.UserControllerTest)  Time elapsed: 0.102 s  <<< FAILURE!
+java.lang.AssertionError: View name expected:<users/login> but was:</users/registration>
+	at ImageHoster.controller.UserControllerTest.signupWithCorrectPasswordType(UserControllerTest.java:88)
+

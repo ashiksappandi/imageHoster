@@ -1,0 +1,4 @@
+ImageHoster\controller\HomeControllerTest.class
+ImageHoster\controller\ImageControllerTest.class
+ImageHoster\controller\UserControllerTest.class
+ImageHoster\controller\CommentControllerTest.class

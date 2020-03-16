@@ -1,10 +1,8 @@
 package ImageHoster.controller;
 
-import ImageHoster.model.Comment;
 import ImageHoster.model.Image;
 import ImageHoster.model.Tag;
 import ImageHoster.model.User;
-import ImageHoster.service.CommentService;
 import ImageHoster.service.ImageService;
 import ImageHoster.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +27,6 @@ public class ImageController {
     @Autowired
     private TagService tagService;
 
-    @Autowired
-    private CommentService commentService;
-
     //This method displays all the images in the user home page after successful login
     @RequestMapping("images")
     public String getUserImages(Model model) {
@@ -53,10 +48,9 @@ public class ImageController {
 
     //This method also get comments of a particular image and added in Model type object
     @RequestMapping("/images/{id}/{title}")
-    public String showImage(@PathVariable("title") String title,@PathVariable("id") Integer imageId, Model model) {
-        Image image = imageService.getImage(imageId);//  .getImageById(imageId);
-        List<Comment> comments = commentService.getCommentsById(imageId);
-        model.addAttribute("comments", comments);
+    public String showImage(@PathVariable("id") Integer imageId, Model model) {
+        Image image = imageService.getImage(imageId);
+        model.addAttribute("comments", image.getComments());
         model.addAttribute("image", image);
         model.addAttribute("tags", image.getTags());
         return "images/image";
@@ -112,8 +106,7 @@ public class ImageController {
 
         User sessionUser = (User) session.getAttribute("loggeduser");
         if(sessionUser.getId() != image.getUser().getId()) {
-            List<Comment> comments = commentService.getCommentsById(imageId);
-            model.addAttribute("comments", comments);
+            model.addAttribute("comments", image.getComments());
             model.addAttribute("editError", error);
             model.addAttribute("tags", image.getTags());
             return "images/image";
@@ -172,8 +165,7 @@ public class ImageController {
 
         User sessionUser = (User) session.getAttribute("loggeduser");
         if(sessionUser.getId() != image.getUser().getId()) {
-            List<Comment> comments = commentService.getCommentsById(imageId);
-            model.addAttribute("comments", comments);
+            model.addAttribute("comments", image.getComments());
             model.addAttribute("deleteError", error);
             model.addAttribute("tags", image.getTags());
             return "images/image";
